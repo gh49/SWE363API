@@ -64,6 +64,10 @@ async function checkEmailPassword(email, password) {
     }
 }
 
+app.get("/", function (req, res) {
+    res.send("this is the root of the api");
+})
+
 app.post("/auth", async function (req, res) {
     const email = req.body.email;
     const password = req.body.password;
@@ -212,7 +216,7 @@ app.post("/cart", checkToken, async function (req, res) {
     }
 });
 
-const PORT = 3000
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, function () {
     console.log(`server is listening to port ${PORT}`);
 });
