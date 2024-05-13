@@ -92,6 +92,7 @@ app.post("/register", async function (req, res) {
     const email = req.body.email;
     const password = req.body.password;
     const username = req.body.username;
+    const userLocation = req.body.userLocation;
     if(!isValidEmail(email)) {
         res.status(401).send("Please enter a valid email");
         return;
@@ -110,7 +111,8 @@ app.post("/register", async function (req, res) {
         const userData = {
             email: email,
             password: password,
-            username: username
+            username: username,
+            userLocation: userLocation
         };
         const user = new User(userData);
 

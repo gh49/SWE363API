@@ -2,6 +2,8 @@ const db = require("../db");
 
 const Post = db.model("Post", {
     title: String,
+    description: String,
+    code: String,
     price: Number,
     quantity: Number,
     photoUrls: [String],
