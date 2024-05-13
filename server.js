@@ -3,9 +3,11 @@ const bodyParser = require("body-parser");
 const jwt = require("jwt-simple");
 const Post = require("./models/post");
 const User = require("./models/user");
+const cors = require('cors');
 
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
