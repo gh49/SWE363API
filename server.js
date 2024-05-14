@@ -4,6 +4,8 @@ const jwt = require("jwt-simple");
 const Post = require("./models/post");
 const User = require("./models/user");
 const cors = require('cors');
+const multer = require("multer");
+const upload = multer({ dest: 'uploads/' });
 
 const app = express();
 
@@ -65,6 +67,54 @@ async function checkEmailPassword(email, password) {
         return {result: false};
     }
 }
+
+function updateJSON(originalJSON, updateJSON) {
+    for (const key in updateJSON) {
+      if (updateJSON.hasOwnProperty(key)) {
+        originalJSON[key] = updateJSON[key];
+      }
+    }
+    return originalJSON;
+  }
+
+app.post('/images/:postId', upload.single('image'), async (req, res) => {
+    try {
+      const imageBuffer = fs.readFileSync(req.file.path);
+  
+      const post = await Post.findById(req.params.postId);
+      if(!post.images) {
+        post.images = [];
+      }
+
+      post.images.push(imageBuffer);
+      await post.save();
+  
+      res.json({ message: 'Image uploaded successfully.' });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/images/:postId/:index', async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.postId);
+      if (!post || !post.images) {
+        return res.status(404).send('Image not found');
+      }
+  
+      res.set('Content-Type', 'image/jpeg');
+
+      const index = req.params.index;
+      if(post.images.length >= index) {
+        res.status(401).send("Index out of bounds");
+      }
+      res.send(post.images[index]);
+    } catch (error) {
+      console.error('Error retrieving image:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
 
 app.get("/", function (req, res) {
     res.send("this is the root of the api");
@@ -233,6 +283,19 @@ app.get("/users/:id", async function (req, res) {
         delete userData["cart"];
 
         res.status(201).json({user: userData});
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.put("/users/", checkToken, async function (req, res) {
+    try {
+        const oldUser = req.userData;
+        const updatedUser = updateJSON(oldUser, req.body.user);
+        const userM = new User(updatedUser);
+        await userM.save();
+
+        res.status(201).json({user: userM});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

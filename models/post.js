@@ -9,6 +9,7 @@ const Post = db.model("Post", {
     price: Number,
     quantity: Number,
     photoUrls: [String],
+    images: [Buffer],
     name: String,
     age: Number,
     gender: String,
