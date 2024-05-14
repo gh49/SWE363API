@@ -5,6 +5,7 @@ const Post = db.model("Post", {
     description: String,
     code: String,
     postType: String,
+    createdAt: { type: Date, default: Date.now },
     userId: String,
     price: Number,
     quantity: Number,
