@@ -4,6 +4,8 @@ const Post = db.model("Post", {
     title: String,
     description: String,
     code: String,
+    postType: String,
+    userId: String,
     price: Number,
     quantity: Number,
     photoUrls: [String],

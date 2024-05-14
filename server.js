@@ -129,8 +129,9 @@ app.post("/register", async function (req, res) {
 });
 
 app.post("/post", checkToken, async function (req, res) {
+    req.body.post.userId = req.userData.id;
     const post = new Post(req.body.post);
-    
+    req.userData
     try {
         const savedPost = await post.save();
         res.status(201).json({post: savedPost});
@@ -215,6 +216,23 @@ app.post("/cart", checkToken, async function (req, res) {
         const updatedUser = await req.userData.save();
 
         res.status(201).json({user: updatedUser});
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get("/users/:id", async function (req, res) {
+    try {
+        const user = await User.findById(req.params.id);
+        if(!user) {
+            return res.status(401).send("Error: No such user");
+        }
+        const userData = user.toJSON();
+        delete userData["email"];
+        delete userData["password"];
+        delete userData["cart"];
+
+        res.status(201).json({user: userData});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
